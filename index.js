@@ -8,7 +8,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     player.setPosition(windowWidth / 2, windowHeight / 2);
 
-    p5.disableFriendlyErrors=true;
+    p5.disableFriendlyErrors = true;
     if (windowHeight < windowWidth) {
         playerSpeed *= windowHeight / 743;
         enemySpeed *= windowHeight / 743;
@@ -20,8 +20,10 @@ function setup() {
 }
 var score = 0;
 var firstBite = false;
+var backgroundColor = "#222"
+var invertedColors = false;
 function draw() {
-    background("#222")
+    background(backgroundColor)
     generateNewEnemies();
 
     enemies.forEach(function (enemy) {
@@ -33,6 +35,25 @@ function draw() {
                     firstBite = true;
                     enemies.splice(enemies.indexOf(enemy), 1);
                     player.size += enemy.size;
+                    if (player.size > windowWidth && player.size > windowHeight) {
+                        if (!invertedColors) {
+                            player.color = "#222"
+                            backgroundColor = "#fff"
+                            enemyColor = "#222";
+
+                        } else {
+                            player.color = "#fff"
+                            backgroundColor = "#222"
+                            enemyColor = "#fff";
+
+                        }
+                        firstBite = false;
+                        invertedColors = !invertedColors;
+                        player.size = minimumPlayerSize;
+                        minimumEnemySize = 7;
+                        maximumEnemySize = 30;
+                        enemies = [];
+                    }
                     score++;
                 }
                 else {
@@ -41,6 +62,10 @@ function draw() {
             }
             enemy.update();
             enemy.draw();
+            textSize(32);
+            fill(player.color)
+            text(score, 0, 32);
+            // player.setPosition(mouseX,mouseY)
         }
     });
 
@@ -52,12 +77,29 @@ function draw() {
     }
     player.draw();
 }
+function resetStage() {
+    player.color = "#fff"
+    backgroundColor = "#222"
+    enemyColor = "#fff";
+
+    firstBite = false;
+    invertedColors = false;
+    player.size = minimumPlayerSize;
+    minimumEnemySize = 7;
+    maximumEnemySize = 30;
+    enemies = [];
+    score = 0;
+    player.setPosition(windowWidth / 2, windowHeight / 2);
+    loop();
+}
 function gameOver() {
     noLoop();
     alert("Game over! You ate " + score + " enemies");
+    resetStage();
 }
+var enemyColor = "#fff";
 var enemySpeed = 1;
-var minimumEnemySize = 10;
+var minimumEnemySize = 7;
 var maximumEnemySize = 30;
 function generateNewEnemies() {
     if (random(1) < 0.01) {
@@ -74,11 +116,12 @@ function generateNewEnemies() {
 
         var speedFactor = 1 - (Math.abs(newEnemy.vx) + Math.abs(newEnemy.vy)) / (2 * enemySpeed);
         newEnemy.size = minimumEnemySize + (maximumEnemySize - minimumEnemySize) * speedFactor;
+        newEnemy.color = enemyColor;
         // console.log("new Enemy size = " + newEnemy.size + " speedFactor: " + speedFactor)
         enemies.push(newEnemy)
     }
 }
-const options = { probabilityThreshold: 0.95 };
+const options = { probabilityThreshold: 0.75 };
 const classifier = ml5.soundClassifier('SpeechCommands18w', options, modelReady);
 
 function modelReady() {
@@ -93,7 +136,7 @@ function gotResult(error, results) {
     // console.log("Result: " + results[0].label + " confidence " + results[0].confidence);
     switch (results[0].label) {
         case "up":
-            up();
+            if (results[0].confidence > 0.98) up();
             break;
         case "down":
             down();
