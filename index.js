@@ -10,7 +10,12 @@ function setup() {
 
     if (windowHeight < windowWidth) {
         playerSpeed *= windowHeight / 743;
-    } else playerSpeed *= windowWidth / 743;
+        enemySpeed *= windowHeight / 743;
+    } else {
+        playerSpeed *= windowWidth / 743;
+        enemySpeed *= windowWidth / 743;
+
+    }
 }
 var score = 0;
 var firstBite = false;
