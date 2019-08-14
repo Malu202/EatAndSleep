@@ -6,7 +6,11 @@ var minimumPlayerSize = 20;
 player.size = minimumPlayerSize;
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    player.setPosition(windowWidth / 2, windowHeight / 2)
+    player.setPosition(windowWidth / 2, windowHeight / 2);
+
+    if (windowHeight < windowWidth) {
+        playerSpeed *= windowHeight / 743;
+    } else playerSpeed *= windowWidth / 743;
 }
 var score = 0;
 var firstBite = false;
@@ -64,7 +68,7 @@ function generateNewEnemies() {
 
         var speedFactor = 1 - (Math.abs(newEnemy.vx) + Math.abs(newEnemy.vy)) / (2 * enemySpeed);
         newEnemy.size = minimumEnemySize + (maximumEnemySize - minimumEnemySize) * speedFactor;
-        console.log("new Enemy size = " + newEnemy.size + " speedFactor: " + speedFactor)
+        // console.log("new Enemy size = " + newEnemy.size + " speedFactor: " + speedFactor)
         enemies.push(newEnemy)
     }
 }
@@ -102,7 +106,7 @@ function gotResult(error, results) {
     }
 }
 
-const playerSpeed = 1;
+var playerSpeed = 1;
 function up() {
     player.setVelocity(0, -1 * playerSpeed);
 }
