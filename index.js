@@ -8,6 +8,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     player.setPosition(windowWidth / 2, windowHeight / 2);
 
+    p5.disableFriendlyErrors=true;
     if (windowHeight < windowWidth) {
         playerSpeed *= windowHeight / 743;
         enemySpeed *= windowHeight / 743;
